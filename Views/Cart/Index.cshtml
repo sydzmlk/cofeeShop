@@ -1,0 +1,125 @@
+﻿@model List<CoffeeShop.ViewModels.CartItemVM>
+
+<section class="ftco-section">
+    <div class="container">
+
+        <h2 class="mb-5 text-center">Your Cart</h2>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center">
+                <p>Your cart is empty</p>
+            </div>
+        }
+        else
+        {
+
+            <table class="table table-dark table-hover">
+
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Subtotal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td class="d-flex align-items-center">
+
+                                <img src="@item.ImageUrl"
+                                     style="width:60px;height:60px;object-fit:cover;margin-right:15px" />
+
+                                <span>@item.Name</span>
+
+                            </td>
+
+                            <td>@item.Price.ToString("0.00") ₼</td>
+
+                            <td>
+                                <div class="d-flex align-items-center" style="gap:10px;">
+
+                                    <form asp-controller="Cart" asp-action="ChangeQty" method="post" class="qty-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <input type="hidden" name="delta" value="-1" />
+                                        <button type="submit" class="btn btn-sm btn-outline-light">-</button>
+                                    </form>
+
+                                    <span>@item.Quantity</span>
+
+                                    <form asp-controller="Cart" asp-action="ChangeQty" method="post" class="qty-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <input type="hidden" name="delta" value="1" />
+                                        <button type="submit" class="btn btn-sm btn-outline-light">+</button>
+                                    </form>
+
+                                </div>
+                            </td>
+
+                            <td>@item.Subtotal.ToString("0.00") ₼</td>
+
+                            <td></td>
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+            <div class="text-right mt-4">
+
+                <h4>
+                    Total:
+                    @Model.Sum(x => x.Subtotal).ToString("0.00") ₼
+                </h4>
+
+                <a href="/Checkout"
+                   class="btn btn-primary mt-3">
+                    Proceed to Checkout
+                </a>
+
+            </div>
+
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).on("submit", ".remove-form", function (e) {
+            e.preventDefault();
+
+            var $form = $(this);
+
+            $.ajax({
+                url: $form.attr("action"),
+                type: "POST",
+                data: $form.serialize(),
+                success: function (res) {
+                    if (res && res.success) {
+                        $("#cartCount").text(res.count);
+                        
+                        $form.closest("tr").remove();
+
+                        
+                        if ($("tbody tr").length === 0) {
+                            location.reload();
+                        } else {
+                            location.reload();
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,36 @@
+@model CoffeeShop.Models.BlogPost
+
+<section class="home-slider owl-carousel">
+  <div class="slider-item" style="background-image: url(/images/bg_3.jpg);" data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row slider-text justify-content-center align-items-center">
+        <div class="col-md-7 col-sm-12 text-center ftco-animate">
+            <h1 class="mb-3 mt-5 bread">Blog Details</h1>
+            <p class="breadcrumbs"><span class="mr-2"><a href="/Home/Index">Home</a></span> <span class="mr-2"><a href="/Home/Blog">Blog</a></span> <span>Blog Single</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section pt-5 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 ftco-animate">
+        <h2 class="mb-3">@Model.Title</h2>
+        <p>
+          <img src="@Model.ImageUrl" alt="" class="img-fluid">
+        </p>
+        <p>@Model.Content</p>
+        <div class="tag-widget post-tag-container mb-5 mt-5">
+          <div class="tagcloud">
+            <a href="#" class="tag-cloud-link">Life</a>
+            <a href="#" class="tag-cloud-link">Sport</a>
+            <a href="#" class="tag-cloud-link">Tech</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

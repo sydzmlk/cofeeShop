@@ -1,0 +1,109 @@
+﻿@model CoffeeShop.ViewModels.CheckoutVM
+@using CoffeeShop.Models
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-10 text-center">
+                <h2>Checkout</h2>
+            </div>
+        </div>
+
+        <div class="row">
+           
+            <div class="col-lg-7">
+                <div class="p-4" style="background:#1b1b1b;border-radius:12px;">
+                    <h4 class="mb-4">Customer Details</h4>
+
+                    <form asp-action="Index" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notes (optional)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <label class="mb-3">Payment Method</label>
+
+                            <div class="payment-option">
+                                <label class="d-flex align-items-center">
+                                    <input type="radio" name="PaymentMethod" value="CashOnDelivery" checked>
+                                    <span class="ml-2">Cash On Delivery</span>
+                                </label>
+                            </div>
+
+                            <div class="payment-option">
+                                <label class="d-flex align-items-center">
+                                    <input type="radio" name="PaymentMethod" value="PayAtCafe">
+                                    <span class="ml-2">Pay At Cafe</span>
+                                </label>
+                            </div>
+
+                            <div class="payment-option">
+                                <label class="d-flex align-items-center">
+                                    <input type="radio" name="PaymentMethod" value="CardDemo">
+                                    <span class="ml-2">Card (Demo)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-outline-primary w-100">
+                            Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+          
+            <div class="col-lg-5 mt-4 mt-lg-0">
+                <div class="p-4" style="background:#1b1b1b;border-radius:12px;">
+                    <h4 class="mb-4">Order Summary</h4>
+
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <div style="font-weight:600;">@item.Name</div>
+                                <small class="text-muted">x @(item.Quantity)</small>
+                            </div>
+                            <div>@item.Subtotal.ToString("0.00") ₼</div>
+                        </div>
+                    }
+
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <h5>Total</h5>
+                        <h5>@Model.Total.ToString("0.00") ₼</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

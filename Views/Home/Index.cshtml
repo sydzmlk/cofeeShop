@@ -1,0 +1,140 @@
+@model CoffeeShop.ViewModels.HomeViewModel
+
+<section class="home-slider owl-carousel">
+  <div class="slider-item" style="background-image: url(/images/bg_1.jpg);">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+        <div class="col-md-8 col-sm-12 text-center ftco-animate">
+            <span class="subheading">Welcome</span>
+            <h1 class="mb-4">The Best Coffee Testing Experience</h1>
+            <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                    <a asp-controller="Shop" asp-action="Index" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a> <a href="/Home/Menu" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slider-item" style="background-image: url(/images/bg_2.jpg);">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
+        <div class="col-md-8 col-sm-12 text-center ftco-animate">
+            <span class="subheading">Welcome</span>
+            <h1 class="mb-4">Amazing Taste &amp; Beautiful Place</h1>
+            <p class="mb-4 mb-md-5">A small river named Duden flows by their place and supplies it with the necessary regelialia.</p>
+                    <a asp-controller="Shop" asp-action="Index" class="btn btn-primary p-3 px-xl-4 py-xl-3">Order Now</a></a> <a href="/Home/Menu" class="btn btn-white btn-outline-white p-3 px-xl-4 py-xl-3">View Menu</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-about d-md-flex">
+    <div class="one-half img" style="background-image: url(/images/about.jpg);"></div>
+    <div class="one-half ftco-animate">
+        <div class="overlap">
+        <div class="heading-section ftco-animate ">
+            <span class="subheading">Discover</span>
+            <h2 class="mb-4">Our Story</h2>
+        </div>
+        <div>
+            <p>On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their.</p>
+        </div>
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section ftco-services">
+    <div class="container">
+        <div class="row">
+            @if(Model.Services != null)
+            {
+                foreach(var service in Model.Services)
+                {
+                    <div class="col-md-4 ftco-animate">
+                        <div class="media d-block text-center block-6 services">
+                            <div class="icon d-flex justify-content-center align-items-center mb-5">
+                                <span class="@service.IconClass"></span>
+                            </div>
+                            <div class="media-body">
+                                <h3 class="heading">@service.Title</h3>
+                                <p>@service.Description</p>
+                            </div>
+                        </div>      
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5 pb-3">
+            <div class="col-md-7 heading-section ftco-animate text-center">
+                <span class="subheading">Discover</span>
+                <h2 class="mb-4">Best Coffee Sellers</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+            </div>
+        </div>
+        <div class="row">
+            @if(Model.FeaturedProducts != null)
+            {
+                foreach(var item in Model.FeaturedProducts)
+                {
+                    <div class="col-md-3">
+                        <div class="menu-entry">
+                            <a href="/Home/ProductSingle/@item.Id" class="img" style="background-image: url(@item.ImageUrl);"></a>
+                            <div class="text text-center pt-4">
+                                <h3><a href="/Home/ProductSingle/@item.Id">@item.Name</a></h3>
+                                <p>@item.Description</p>
+                                <p class="price"><span>$@item.Price</span></p>
+                                <form asp-controller="Cart" asp-action="Add" method="post" class="add-to-cart-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@item.Id" />
+                                    <input type="hidden" name="qty" value="1" />
+                                    <button type="submit" class="btn btn-primary btn-outline-primary">
+                                        Add to Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center mb-5 pb-3">
+      <div class="col-md-7 heading-section ftco-animate text-center">
+        <h2 class="mb-4">Recent from blog</h2>
+        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+      </div>
+    </div>
+    <div class="row d-flex">
+      @if(Model.RecentBlogs != null)
+      {
+          foreach(var blog in Model.RecentBlogs)
+          {
+              <div class="col-md-4 d-flex ftco-animate">
+                  <div class="blog-entry align-self-stretch">
+                  <a href="/Home/BlogSingle/@blog.Id" class="block-20" style="background-image: url('@blog.ImageUrl');"></a>
+                  <div class="text py-4 d-block">
+                      <div class="meta">
+                      <div><a href="#">@blog.CreatedAt.ToString("MMM dd, yyyy")</a></div>
+                      <div><a href="#">@blog.Author</a></div>
+                      <div><a href="#" class="meta-chat"><span class="icon-chat"></span> @blog.CommentCount</a></div>
+                      </div>
+                      <h3 class="heading mt-2"><a href="/Home/BlogSingle/@blog.Id">@blog.Title</a></h3>
+                      <p>@blog.Content.Substring(0, Math.Min(blog.Content.Length, 100))...</p>
+                  </div>
+                  </div>
+              </div>
+          }
+      }
+    </div>
+  </div>
+</section>

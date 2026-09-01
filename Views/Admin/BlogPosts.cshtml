@@ -1,0 +1,61 @@
+@model List<CoffeeShop.Models.BlogPost>
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Blog Posts</h2>
+    <a class="btn btn-success" href="/Admin/CreateBlogPost">+ New Post</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th style="width: 90px;">Image</th>
+                <th>Title</th>
+                <th style="width: 180px;">Author</th>
+                <th style="width: 110px;">Comments</th>
+                <th style="width: 180px;">Date</th>
+                <th style="width: 200px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var p in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@(string.IsNullOrWhiteSpace(p.ImageUrl) ? "/images/image_1.jpg" : p.ImageUrl)" style="width:72px;height:48px;object-fit:cover;border-radius:6px;" />
+                    </td>
+                    <td>
+                        <div class="fw-semibold">@p.Title</div>
+                        <div class="text-muted" style="font-size: 0.9rem;">
+                            @(p.Content?.Length > 80 ? p.Content.Substring(0, 80) + "…" : p.Content)
+                        </div>
+                    </td>
+                    <td>@p.Author</td>
+                    <td><span class="badge bg-secondary">@p.CommentCount</span></td>
+                    <td>@p.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="/Admin/EditBlogPost/@p.Id">Edit</a>
+                        <form method="post" action="/Admin/DeleteBlogPost" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">No posts yet.</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

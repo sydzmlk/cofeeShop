@@ -1,0 +1,97 @@
+﻿@model List<CoffeeShop.Models.Order>
+@using System.Globalization
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Sifarişlər";
+    var az = new CultureInfo("az-Latn-AZ");
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-1" style="font-weight:800;">Sifarişlər</h2>
+        <div class="muted">Bütün sifarişlərin siyahısı</div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a class="btn-ghost text-decoration-none" href="/Admin/Index">← Dashboard</a>
+        <a class="btn-ghost text-decoration-none" href="/Admin/Orders">⟳ Yenilə</a>
+    </div>
+</div>
+
+<div class="glass p-3">
+    <div class="table-responsive">
+        <table class="table table-dark table-borderless align-middle mb-0">
+            <thead style="border-bottom:1px solid rgba(255,255,255,.12);">
+                <tr class="muted">
+                    <th style="width:70px;">#</th>
+                    <th>Müştəri</th>
+                    <th>Əlaqə</th>
+                    <th style="width:120px;">Ödəniş</th>
+                    <th style="width:120px;">Cəm</th>
+                    <th style="width:130px;">Status</th>
+                    <th style="width:170px;">Tarix</th>
+                    <th style="width:140px;"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model == null || Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="muted">Sifariş tapılmadı.</td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var o in Model)
+                    {
+                        var statusText = o.Status.ToString();
+
+                       
+                        var statusStyle = "background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);";
+                        if (statusText.Equals("Pending", StringComparison.OrdinalIgnoreCase))
+                            statusStyle = "background:rgba(255,206,86,.10);border:1px solid rgba(255,206,86,.25);";
+                        else if (statusText.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                            statusStyle = "background:rgba(110,231,255,.10);border:1px solid rgba(110,231,255,.25);";
+                        else if (statusText.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+                            statusStyle = "background:rgba(255,99,132,.10);border:1px solid rgba(255,99,132,.25);";
+
+                        <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                            <td class="fw-semibold">@o.Id</td>
+
+                            <td>
+                                <div class="fw-semibold">@o.FullName</div>
+                                <div class="muted" style="font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:420px;">
+                                    @o.Address
+                                </div>
+                            </td>
+
+                            <td>
+                                <div>@o.Email</div>
+                                <div class="muted" style="font-size:12px;">@o.Phone</div>
+                            </td>
+
+                            <td class="muted">@o.PaymentMethod</td>
+
+                            <td class="fw-semibold">@o.TotalAmount.ToString("N2", az)</td>
+
+                            <td>
+                                <span style="display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;@statusStyle">
+                                    <span style="width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.65);"></span>
+                                    <span class="muted" style="font-size:12px;">@statusText</span>
+                                </span>
+                            </td>
+
+                            <td class="muted">@o.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+
+                            <td class="text-end">
+                                <a class="btn-ghost text-decoration-none" href="/Admin/OrderDetails/@o.Id">Detallar</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

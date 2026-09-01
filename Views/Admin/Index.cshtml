@@ -1,0 +1,134 @@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+
+    
+    <div>
+        <h2 class="mb-1" style="font-weight:800;">Admin Panel</h2>
+        <div class="muted">Ümumi göstəricilər və sürətli əməliyyatlar</div>
+    </div>
+
+    <!-- QUICK ACTION BUTTONS -->
+    <div class="d-flex flex-nowrap align-items-center gap-2">
+        <a class="btn-ghost text-decoration-none" href="/Admin/Products">+ Məhsul</a>
+        <a class="btn-ghost text-decoration-none" href="/Admin/Messages">Mesajlar</a>
+        <a class="btn-ghost text-decoration-none" href="/Home/Index" target="_blank">Sayta bax</a>
+    </div>
+  
+
+</div>
+
+<div class="row g-3">
+
+    <!-- PRODUCTS -->
+
+    <div class="col-md-4">
+        <div class="glass tilt p-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div>
+                    <div class="muted" style="font-size:12px; letter-spacing:.06em; text-transform:uppercase;">Məhsullar</div>
+                    <div style="font-weight:700; font-size:16px;">Ümumi Məhsul</div>
+                </div>
+                <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);">
+                    🧁
+                </div>
+            </div>
+
+            
+            <div class="d-flex align-items-baseline gap-2">
+                <div class="counter" data-target="@ViewBag.ProductCount" style="font-size:44px;font-weight:800;line-height:1;">0</div>
+                <div class="muted">ədəd</div>
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <a class="btn-ghost text-decoration-none" href="/Admin/Products">Bax</a>
+                <a class="btn-ghost text-decoration-none" href="/Admin/CreateProduct">Əlavə et</a>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- MESSAGES -->
+
+    <div class="col-md-4">
+        <div class="glass tilt p-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div>
+                    <div class="muted" style="font-size:12px; letter-spacing:.06em; text-transform:uppercase;">Inbox</div>
+                    <div style="font-weight:700; font-size:16px;">Gələn Mesajlar</div>
+                </div>
+                <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(110,231,255,.10);border:1px solid rgba(110,231,255,.25);">
+                    ✉️
+                </div>
+            </div>
+
+            
+            <div class="d-flex align-items-baseline gap-2">
+                <div class="counter" data-target="@ViewBag.MessageCount" style="font-size:44px;font-weight:800;line-height:1;">0</div>
+                <div class="muted">mesaj</div>
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <a class="btn-ghost text-decoration-none" href="/Admin/Messages">Inbox-a keç</a>
+            </div>
+        </div>
+       
+
+    </div>
+
+    <!-- ORDERS -->
+
+    <div class="col-md-4">
+        <div class="glass tilt p-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div>
+                    <div class="muted" style="font-size:12px; letter-spacing:.06em; text-transform:uppercase;">Orders</div>
+                    <div style="font-weight:700; font-size:16px;">Sifarişlər</div>
+                </div>
+                <div style="width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(167,139,250,.10);border:1px solid rgba(167,139,250,.25);">
+                    🧾
+                </div>
+            </div>
+
+            
+            <div class="d-flex align-items-baseline gap-2">
+                <div class="counter" data-target="@ViewBag.OrderCount" style="font-size:44px;font-weight:800;line-height:1;">0</div>
+                <div class="muted">sifariş</div>
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <a class="btn-ghost text-decoration-none" href="/Admin/Orders">Bax</a>
+            </div>
+        </div>
+        
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+        (function () {
+            const els = document.querySelectorAll(".counter");
+            els.forEach(el => {
+                const target = parseInt(el.getAttribute("data-target") || "0", 10);
+                const duration = 700;
+                const start = performance.now();
+
+                function tick(now) {
+                    const t = Math.min(1, (now - start) / duration);
+                    const val = Math.floor(target * (0.2 + 0.8 * t));
+                    el.textContent = (t >= 1) ? target : val;
+                    if (t < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            });
+        })();
+    </script>
+
+}

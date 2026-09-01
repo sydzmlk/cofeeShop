@@ -1,0 +1,206 @@
+﻿@model List<CoffeeShop.Models.AdminUser>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Users";
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-1" style="font-weight:800;">Admin İstifadəçilər</h2>
+        <div class="muted">Rollar, icazələr və idarəetmə</div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <div class="glass px-2 py-2" style="border-radius:14px;">
+            <input id="userSearch"
+                   class="form-control"
+                   placeholder="Axtar... (username / role)"
+                   style="min-width:260px;
+                          background:rgba(255,255,255,.06);
+                          border:1px solid rgba(255,255,255,.12);
+                          color:rgba(255,255,255,.92);" />
+        </div>
+
+        <a class="btn-ghost text-decoration-none" href="/Admin/CreateUser">+ Yeni istifadəçi</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="glass p-4 text-center">
+        <div style="font-size:42px;">👤</div>
+        <h4 class="mt-2" style="font-weight:800;">İstifadəçi yoxdur</h4>
+        <div class="muted">İlk admin istifadəçini əlavə et.</div>
+
+        <div class="mt-3">
+            <a class="btn-ghost text-decoration-none" href="/Admin/CreateUser">+ Yeni istifadəçi</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="glass tilt p-2" style="background: rgba(0,0,0,.22);">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0" id="usersTable"
+                   style="--bs-table-bg: transparent; --bs-table-color: rgba(255,255,255,.92);">
+                <thead>
+                    <tr style="color:rgba(255,255,255,.88); border-bottom:1px solid rgba(255,255,255,.14);">
+                        <th style="width:60px;">#</th>
+                        <th>Username</th>
+                        <th style="width:220px;">Role</th>
+                        <th style="width:250px;">Əməliyyat</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        var i = 0;
+                        var currentUsername = User?.Identity?.Name ?? "";
+                        var isAdmin = User.IsInRole("Admin");
+                    }
+
+                    @foreach (var u in Model)
+                    {
+                        i++;
+
+                        var isMe = string.Equals(u.Username, currentUsername, StringComparison.OrdinalIgnoreCase);
+
+                        string badgeBg, badgeBorder, badgeText;
+                        if (u.Role == "Admin")
+                        {
+                            badgeBg = "rgba(255,99,132,.16)";
+                            badgeBorder = "rgba(255,99,132,.42)";
+                            badgeText = "Admin";
+                        }
+                        else if (u.Role == "AssistantAdmin")
+                        {
+                            badgeBg = "rgba(110,231,255,.16)";
+                            badgeBorder = "rgba(110,231,255,.40)";
+                            badgeText = "AssistantAdmin";
+                        }
+                        else
+                        {
+                            badgeBg = "rgba(167,139,250,.16)";
+                            badgeBorder = "rgba(167,139,250,.40)";
+                            badgeText = "Editor";
+                        }
+
+                        <tr class="userRow" style="border-top:1px solid rgba(255,255,255,.10);">
+                            <td class="muted">@i</td>
+
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:40px;height:40px;border-radius:14px;
+                                                    display:flex;align-items:center;justify-content:center;
+                                                    background:rgba(255,255,255,.06);
+                                                    border:1px solid rgba(255,255,255,.12);">
+                                        👤
+                                    </div>
+
+                                    <div>
+                                        <div style="font-weight:900;">@u.Username</div>
+                                        @if (isMe)
+                                        {
+                                            <div class="muted" style="font-size:12px;">(bu sən)</div>
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="badge"
+                                      style="background:@badgeBg;
+                                                 border:1px solid @badgeBorder;
+                                                 color:rgba(255,255,255,.96);
+                                                 padding:8px 12px;
+                                                 border-radius:999px;
+                                                 font-weight:900;">
+                                    @badgeText
+                                </span>
+                            </td>
+
+                            <td style="white-space:nowrap;">
+                                <a class="btn-ghost text-decoration-none me-2"
+                                   href="/Admin/EditUserRole/@u.Id">
+                                    🔧 Rol dəyiş
+                                </a>
+
+                              
+                                @if (!isAdmin)
+                                {
+                                    <button type="button" class="btn-ghost"
+                                            style="border-color:rgba(255,99,132,.45); opacity:.55;"
+                                            onclick="alert('Bu əməliyyat üçün icazəniz yoxdur.');">
+                                        🗑️ Sil
+                                    </button>
+                                }
+                                else if (isMe)
+                                {
+                                    <button type="button" class="btn-ghost"
+                                            style="border-color:rgba(255,99,132,.45); opacity:.55;"
+                                            onclick="alert('Öz hesabını silə bilməzsən.');">
+                                        🗑️ Sil
+                                    </button>
+                                }
+                                else
+                                {
+                                    <form method="post" action="/Admin/DeleteUser" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@u.Id" />
+                                        <button class="btn-ghost"
+                                                style="border-color:rgba(255,99,132,.45);"
+                                                onclick="return confirm('Silmək istədiyinizə əminsiniz?');">
+                                            🗑️ Sil
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="muted mt-2">
+        Göstərilən: <span id="shownCount">@Model.Count</span> / @Model.Count
+    </div>
+}
+
+@section Scripts {
+    <script>
+      
+        (function(){
+            const input = document.getElementById("userSearch");
+            const table = document.getElementById("usersTable");
+            const shown = document.getElementById("shownCount");
+            if(!input || !table) return;
+
+            function norm(s){ return (s||"").toString().toLowerCase().trim(); }
+
+            input.addEventListener("input", function(){
+                const q = norm(input.value);
+                const rows = table.querySelectorAll("tbody .userRow");
+                let visible = 0;
+
+                rows.forEach(r => {
+                    const text = norm(r.innerText);
+                    const ok = q === "" || text.includes(q);
+                    r.style.display = ok ? "" : "none";
+                    if(ok) visible++;
+                });
+
+                if(shown) shown.textContent = visible;
+            });
+        })();
+    </script>
+}

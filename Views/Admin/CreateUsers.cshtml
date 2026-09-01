@@ -1,0 +1,39 @@
+﻿@model CoffeeShop.Models.AdminUser
+@{
+    Layout = "_AdminLayout";
+    var roles = (string[])ViewBag.Roles;
+}
+
+<h2>Yeni istifadəçi</h2>
+
+<form method="post" style="max-width:500px;">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-2">
+        <label class="form-label">Username</label>
+        <input asp-for="Username" class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Password</label>
+        <input asp-for="Password" type="password" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select asp-for="Role" class="form-select">
+            @foreach (var r in roles)
+            {
+                <option value="@r">@r</option>
+            }
+        </select>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="text-danger mb-2">@ViewBag.Error</div>
+    }
+
+    <button class="btn btn-success">Yarat</button>
+    <a class="btn btn-secondary" href="/Admin/Users">Geri</a>
+</form>

@@ -1,0 +1,77 @@
+@model CoffeeShop.Models.Order
+
+<section class="home-slider owl-carousel">
+  <div class="slider-item" style="background-image: url(/images/bg_3.jpg);" data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row slider-text justify-content-center align-items-center">
+        <div class="col-md-7 col-sm-12 text-center ftco-animate">
+            <h1 class="mb-3 mt-5 bread">Checkout</h1>
+            <p class="breadcrumbs"><span class="mr-2"><a href="/Home/Index">Home</a></span> <span>Checkout</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 ftco-animate">
+            <form asp-action="Checkout" asp-controller="Home" method="post" class="billing-form ftco-bg-dark p-3 p-md-5">
+                <h3 class="mb-4 billing-heading">Billing Details</h3>
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="firstname">Firt Name</label>
+                            <input asp-for="FullName" type="text" class="form-control" placeholder="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                         
+                        </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="streetaddress">Street Address</label>
+                            <input asp-for="Address" type="text" class="form-control" placeholder="House number and street name">
+                        </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input asp-for="Phone" type="text" class="form-control" placeholder="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="emailaddress">Email Address</label>
+                            <input asp-for="Email" type="text" class="form-control" placeholder="">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-5 pt-3 d-flex">
+                    <div class="col-md-12">
+                        <div class="cart-detail p-3 p-md-4">
+                            <h3 class="billing-heading mb-4">Payment Method</h3>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div class="radio">
+                                       <label><input type="radio" name="optradio" class="mr-2"> Cash on Delivery</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <input asp-for="TotalAmount" type="hidden" value="17.60" />
+                            <p><button type="submit" class="btn btn-primary py-3 px-4">Place an order</button></p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
+</section>

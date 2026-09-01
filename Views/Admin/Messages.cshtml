@@ -1,0 +1,186 @@
+@model List<CoffeeShop.Models.ContactMessage>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Mesajlar";
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-1" style="font-weight:800;">Gələn Mesajlar</h2>
+        <div class="muted">Contact inbox — axtarış, status və cavab</div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <div class="glass px-2 py-2" style="border-radius:14px;">
+            <input id="msgSearch"
+                   class="form-control"
+                   placeholder="Axtar... (ad / email / mövzu / mesaj)"
+                   style="min-width:280px;
+                          background:rgba(255,255,255,.06);
+                          border:1px solid rgba(255,255,255,.12);
+                          color:rgba(255,255,255,.92);" />
+        </div>
+
+        <span class="btn-ghost" style="cursor:default;">
+            Göstərilən: <span id="shownCount">@Model?.Count</span> / @Model?.Count
+        </span>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="glass p-4 text-center">
+        <div style="font-size:42px;">📭</div>
+        <h4 class="mt-2" style="font-weight:800;">Mesaj yoxdur</h4>
+        <div class="muted">Contact bölməsindən mesaj gələndə burada görünəcək.</div>
+    </div>
+}
+else
+{
+    <div class="glass tilt p-2" style="background: rgba(0,0,0,.22);">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0" id="messagesTable"
+                   style="--bs-table-bg: transparent; --bs-table-color: rgba(255,255,255,.92);">
+
+                <thead>
+                    <tr style="color:rgba(255,255,255,.88); border-bottom:1px solid rgba(255,255,255,.14);">
+                        <th style="width:170px;">Tarix</th>
+                        <th style="width:160px;">Ad</th>
+                        <th style="width:220px;">Email</th>
+                        <th style="width:190px;">Mövzu</th>
+                        <th>Mesaj</th>
+                        <th style="width:180px;">Status</th>
+                        <th style="width:210px;">Əməliyyat</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var msg in Model)
+                    {
+                        var isNew = !msg.IsReplied;
+                        <tr class="msgRow" style="border-top:1px solid rgba(255,255,255,.10);">
+                            <td>
+                                <div style="font-weight:700;">
+                                    @msg.SentAt.ToString("dd.MM.yyyy")
+                                </div>
+                                <div class="muted" style="font-size:12px;">
+                                    @msg.SentAt.ToString("HH:mm")
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="font-weight:800;">@msg.Name</div>
+                                <div class="muted" style="font-size:12px;">ID: @msg.Id</div>
+                            </td>
+
+                            <td>
+                                <div style="font-weight:700;">@msg.Email</div>
+                            </td>
+
+                            <td>
+                                <div style="font-weight:700;">@msg.Subject</div>
+                            </td>
+
+                            <td>
+                                <div style="max-width:520px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    @msg.Message
+                                </div>
+                            </td>
+
+                            <td>
+                                @if (msg.IsReplied)
+                                {
+                                    <span class="badge"
+                                          style="background:rgba(110,231,255,.16);
+                                                         border:1px solid rgba(110,231,255,.40);
+                                                         color:rgba(255,255,255,.96);
+                                                         padding:8px 12px;
+                                                         border-radius:999px;
+                                                         font-weight:800;">
+                                        Cavablanıb
+                                    </span>
+                                    <div class="muted mt-1" style="font-size:12px;">
+                                        @(msg.RepliedAt.HasValue? msg.RepliedAt.Value.ToString("dd.MM.yyyy HH:mm") : "")
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="badge"
+                                          style="background:rgba(255,99,132,.16);
+                                                         border:1px solid rgba(255,99,132,.42);
+                                                         color:rgba(255,255,255,.96);
+                                                         padding:8px 12px;
+                                                         border-radius:999px;
+                                                         font-weight:800;">
+                                        Yeni
+                                    </span>
+                                }
+                            </td>
+
+                            <td style="white-space:nowrap;">
+                                <a class="btn-ghost text-decoration-none me-2"
+                                   asp-controller="Admin"
+                                   asp-action="ReplyMessage"
+                                   asp-route-id="@msg.Id">
+                                    ✉️ Cavab
+                                </a>
+
+                                <form asp-controller="Admin"
+                                      asp-action="DeleteMessage"
+                                      asp-route-id="@msg.Id"
+                                      method="post"
+                                      class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="btn-ghost"
+                                            style="border-color:rgba(255,99,132,.45);"
+                                            onclick="return confirm('Mesaj silinsin?');">
+                                        🗑️ Sil
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // client-side search filter
+        (function(){
+            const input = document.getElementById("msgSearch");
+            const table = document.getElementById("messagesTable");
+            const shown = document.getElementById("shownCount");
+            if(!input || !table) return;
+
+            function norm(s){ return (s||"").toString().toLowerCase().trim(); }
+
+            input.addEventListener("input", function(){
+                const q = norm(input.value);
+                const rows = table.querySelectorAll("tbody .msgRow");
+                let visible = 0;
+
+                rows.forEach(r => {
+                    const text = norm(r.innerText);
+                    const ok = q === "" || text.includes(q);
+                    r.style.display = ok ? "" : "none";
+                    if(ok) visible++;
+                });
+
+                if(shown) shown.textContent = visible;
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,49 @@
+@model CoffeeShop.Models.Product
+@{
+    Layout = "_AdminLayout";
+}
+
+<h2>Məhsula Düzəliş Et</h2>
+
+<form asp-action="EditProduct" asp-controller="Admin" method="post" class="mt-4" style="max-width:600px;">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Məhsulun Adı</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Açıqlama</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Qiymət ($)</label>
+        <input asp-for="Price" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ImageUrl" class="form-label">Şəkil URL (məs: /images/menu-1.jpg)</label>
+        <input asp-for="ImageUrl" class="form-control" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Kateqoriya</label>
+        <select asp-for="CategoryId"
+                class="form-select"
+                asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))">
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Yadda Saxla</button>
+    <a asp-action="Products" asp-controller="Admin" class="btn btn-secondary">Geri Qayıt</a>
+</form>

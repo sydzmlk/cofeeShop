@@ -1,0 +1,122 @@
+@model List<CoffeeShop.Models.BlogComment>
+@{
+    Layout = "_AdminLayout";
+    var parentComments = Model.Where(c => c.ParentCommentId == null).OrderByDescending(c => c.CreatedAt).ToList();
+    var pendingCount = parentComments.Count(c => !c.IsApproved);
+    var approvedCount = parentComments.Count(c => c.IsApproved);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Blog Comments</h2>
+    <div class="d-flex gap-2 flex-wrap">
+        <span class="badge bg-dark">@Model.Count total</span>
+        <span class="badge bg-warning text-dark">@pendingCount pending</span>
+        <span class="badge bg-success">@approvedCount approved</span>
+    </div>
+</div>
+
+@if (TempData["AdminCommentSuccess"] != null)
+{
+    <div class="alert alert-success">@TempData["AdminCommentSuccess"]</div>
+}
+@if (TempData["AdminCommentError"] != null)
+{
+    <div class="alert alert-danger">@TempData["AdminCommentError"]</div>
+}
+
+@if (parentComments.Any())
+{
+    foreach (var comment in parentComments)
+    {
+        var replies = Model.Where(c => c.ParentCommentId == comment.Id).OrderBy(c => c.CreatedAt).ToList();
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between flex-wrap gap-3">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <h5 class="mb-0">@comment.Name</h5>
+                            @if (comment.IsApproved)
+                            {
+                                <span class="badge bg-success">Approved</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending Review</span>
+                            }
+                        </div>
+                        <div class="text-muted small">On post: <strong>@(comment.BlogPost?.Title ?? "Unknown post")</strong></div>
+                        <div class="text-muted small">@comment.CreatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+                        @if (!string.IsNullOrWhiteSpace(comment.Email))
+                        {
+                            <div class="text-muted small">@comment.Email</div>
+                        }
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        @if (!comment.IsApproved)
+                        {
+                            <form method="post" action="/Admin/ApproveBlogComment">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@comment.Id" />
+                                <button class="btn btn-sm btn-success" type="submit">Approve</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" action="/Admin/UnapproveBlogComment">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@comment.Id" />
+                                <button class="btn btn-sm btn-outline-warning" type="submit">Move to Pending</button>
+                            </form>
+                        }
+                        <form method="post" action="/Admin/DeleteBlogComment" onsubmit="return confirm('Delete this comment and its replies?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@comment.Id" />
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+
+                <p class="mt-3 mb-3" style="white-space: pre-line;">@comment.Message</p>
+
+                @if (replies.Any())
+                {
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6 class="mb-3">Replies</h6>
+                        @foreach (var reply in replies)
+                        {
+                            <div class="border rounded p-3 mb-2 bg-white">
+                                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                                    <div>
+                                        <strong>@reply.Name</strong>
+                                        <div class="text-muted small">Admin Reply · @reply.CreatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+                                    </div>
+                                    <form method="post" action="/Admin/DeleteBlogReply" onsubmit="return confirm('Delete this reply?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@reply.Id" />
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete Reply</button>
+                                    </form>
+                                </div>
+                                <div class="mt-2" style="white-space: pre-line;">@reply.Message</div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <form method="post" action="/Admin/ReplyToBlogComment" class="mt-3">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="parentCommentId" value="@comment.Id" />
+                    <input type="hidden" name="blogPostId" value="@comment.BlogPostId" />
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold">Reply as admin</label>
+                        <textarea name="message" class="form-control" rows="4" placeholder="Write your reply here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Reply</button>
+                </form>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-light border">No blog comments yet.</div>
+}

@@ -1,0 +1,131 @@
+﻿<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-9 col-lg-7">
+
+                <div class="success-card text-center p-5" id="successCard">
+
+                    
+                    <div class="coffee-animation mb-4">
+                        <div class="cup">
+                            <div class="coffee-fill"></div>
+
+                            <div class="steam steam1"></div>
+                            <div class="steam steam2"></div>
+                            <div class="steam steam3"></div>
+                        </div>
+                    </div>
+
+                  
+                    <div class="check-wrap mb-4">
+                        <svg class="checkmark" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                            <path class="checkmark__check" fill="none"
+                                  d="M14 27l7 7 17-17" />
+                        </svg>
+                    </div>
+
+                    <h2 class="mb-2 glow-text">Order Successful!</h2>
+
+                    <p class="text-muted mb-1">
+                        Thanks, <b>@ViewBag.FullName</b> 👏
+                    </p>
+
+                    <p class="text-muted mb-1">
+                        Order No: <b>#@ViewBag.OrderId</b>
+                    </p>
+
+                    <p class="text-muted mb-4">
+                        Total: <b>@(((decimal)ViewBag.Total).ToString("0.00")) ₼</b>
+                    </p>
+
+                    <div class="d-flex justify-content-center" style="gap:12px;">
+                        <a asp-controller="Shop" asp-action="Index"
+                           class="btn btn-primary btn-outline-primary">
+                            Continue Shopping
+                        </a>
+
+                        <a asp-controller="Home" asp-action="Index"
+                           class="btn btn-white btn-outline-white">
+                            Home
+                        </a>
+                    </div>
+
+                    <div class="tip mt-4">
+                        <small class="text-muted">
+                            Tip: You can check order status in Admin panel later.
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.0/dist/vanilla-tilt.min.js"></script>
+
+    <script>
+
+       
+        VanillaTilt.init(document.querySelector("#successCard"), {
+            max: 10,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2
+        });
+
+
+       
+        (function () {
+
+            const duration = 2000;
+            const end = Date.now() + duration;
+
+            const colors = ["#c49b63", "#ffffff", "#f3d19c", "#ffd700"];
+
+            function randomBetween(a, b) {
+                return a + Math.random() * (b - a);
+            }
+
+            function launchPiece() {
+
+                const el = document.createElement("div");
+
+                el.className = "confetti";
+                el.style.left = randomBetween(10, 90) + "vw";
+                el.style.top = "-10px";
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                el.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
+
+                el.style.width = (6 + Math.random() * 6) + "px";
+                el.style.height = (10 + Math.random() * 10) + "px";
+
+                document.body.appendChild(el);
+
+                const fall = randomBetween(80, 110);
+                const drift = randomBetween(-15, 15);
+                const time = randomBetween(900, 1600);
+
+                el.animate([
+                    { transform: el.style.transform, offset: 0, top: "-10px", left: el.style.left },
+                    { transform: `rotate(${Math.floor(Math.random() * 720)}deg)`, offset: 1, top: fall + "vh", left: `calc(${el.style.left} + ${drift}vw)` }
+                ], { duration: time });
+
+                setTimeout(() => el.remove(), time + 50);
+            }
+
+            const timer = setInterval(() => {
+                for (let i = 0; i < 10; i++) launchPiece();
+                if (Date.now() > end) clearInterval(timer);
+            }, 120);
+
+        })();
+
+    </script>
+
+}

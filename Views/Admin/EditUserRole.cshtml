@@ -1,0 +1,138 @@
+﻿@model CoffeeShop.Models.AdminUser
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Rol dəyiş";
+    var roles = (string[])ViewBag.Roles;
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-1" style="font-weight:800;">Rol dəyiş</h2>
+        <div class="muted">İstifadəçinin rolunu dəyişdir</div>
+    </div>
+
+    <a href="/Admin/Users" class="btn-ghost text-decoration-none">← İstifadəçilərə qayıt</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+
+        <div class="glass tilt p-3" style="background: rgba(0,0,0,.22);">
+
+            <form method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input class="form-control"
+                           value="@Model.Username"
+                           disabled
+                           style="background:rgba(255,255,255,.05);
+                                  border:1px solid rgba(255,255,255,.12);
+                                  color:rgba(255,255,255,.85);" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Role</label>
+
+                    <select name="role"
+                            class="form-select"
+                            style="background:rgba(255,255,255,.06);
+                                   border:1px solid rgba(255,255,255,.12);
+                                   color:rgba(255,255,255,.92);">
+
+                        @foreach (var r in roles)
+                        {
+                            <option value="@r"
+                                    selected="@(r == Model.Role)"
+                                    style="color:black;">
+                                @r
+                            </option>
+                        }
+
+                    </select>
+
+                    <div class="muted mt-1" style="font-size:12px;">
+                        Rol istifadəçinin sistemdəki icazələrini müəyyən edir.
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+
+                    <button class="btn-ghost"
+                            style="font-weight:800;">
+                        💾 Yadda saxla
+                    </button>
+
+                    <a class="btn-ghost text-decoration-none"
+                       style="border-color:rgba(255,255,255,.18);"
+                       href="/Admin/Users">
+                        ↩ Geri
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-6">
+
+        <div class="glass tilt p-3" style="background: rgba(0,0,0,.22);">
+
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div style="font-weight:800;">Rol məlumatı</div>
+                    <div class="muted">Hansı rol nə edə bilər</div>
+                </div>
+                <div class="muted">🔐</div>
+            </div>
+
+            <div class="mt-3">
+
+                <div class="mb-2">
+                    <span class="badge"
+                          style="background:rgba(255,99,132,.15);
+                                 border:1px solid rgba(255,99,132,.35);
+                                 color:white;">
+                        Admin
+                    </span>
+                    <div class="muted mt-1" style="font-size:13px;">
+                        Bütün əməliyyatlara icazə var.
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <span class="badge"
+                          style="background:rgba(110,231,255,.15);
+                                 border:1px solid rgba(110,231,255,.35);
+                                 color:white;">
+                        AssistantAdmin
+                    </span>
+                    <div class="muted mt-1" style="font-size:13px;">
+                        Məhsul və mesajları idarə edə bilər.
+                    </div>
+                </div>
+
+                <div>
+                    <span class="badge"
+                          style="background:rgba(167,139,250,.15);
+                                 border:1px solid rgba(167,139,250,.35);
+                                 color:white;">
+                        Editor
+                    </span>
+                    <div class="muted mt-1" style="font-size:13px;">
+                        Məlumatları görə və redaktə edə bilər, lakin silə bilməz.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

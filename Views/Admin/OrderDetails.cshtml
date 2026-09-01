@@ -1,0 +1,101 @@
+﻿@model CoffeeShop.Models.Order
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = $"Sifariş #{Model.Id}";
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-1" style="font-weight:800;">Sifariş #@Model.Id</h2>
+        <div class="muted">@Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a class="btn-ghost text-decoration-none" href="/Admin/Orders">← Geri</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="glass p-3">
+            <div style="font-weight:800;">Müştəri</div>
+            <div class="mt-2">
+                <div><span class="muted">Ad:</span> @Model.FullName</div>
+                <div><span class="muted">Email:</span> @Model.Email</div>
+                <div><span class="muted">Telefon:</span> @Model.Phone</div>
+                <div class="mt-2"><span class="muted">Ünvan:</span> @Model.Address</div>
+                @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                {
+                    <div class="mt-2"><span class="muted">Qeyd:</span> @Model.Notes</div>
+                }
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,.12);" />
+
+            <div style="font-weight:800;">Ödəniş</div>
+            <div class="mt-2">
+                <div><span class="muted">Metod:</span> @Model.PaymentMethod</div>
+                <div><span class="muted">Cəm:</span> @Model.TotalAmount</div>
+                <div><span class="muted">Status:</span> @Model.Status</div>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,.12);" />
+
+            @if (User.IsInRole("Admin") || User.IsInRole("AssistantAdmin"))
+            {
+                <form method="post" action="/Admin/UpdateOrderStatus" class="d-flex gap-2 align-items-center">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <select class="form-select" name="status">
+                        @foreach (var s in Enum.GetValues(typeof(CoffeeShop.Models.OrderStatus)))
+                        {
+                            <option value="@s" selected="@(s.Equals(Model.Status) ? "selected" : null)">@s</option>
+                        }
+                    </select>
+                    <button class="btn-ghost" type="submit">Yadda saxla</button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="glass p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="font-weight:800;">Sifariş item-ları</div>
+                <div class="muted">@((Model.Items?.Count ?? 0)) ədəd</div>
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-dark table-borderless align-middle mb-0">
+                    <thead style="border-bottom:1px solid rgba(255,255,255,.12);">
+                        <tr class="muted">
+                            <th>Ad</th>
+                            <th>Qiymət</th>
+                            <th>Say</th>
+                            <th>Cəm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items == null || Model.Items.Count == 0)
+                        {
+                            <tr><td colspan="4" class="muted">Item yoxdur.</td></tr>
+                        }
+                        else
+                        {
+                            foreach (var it in Model.Items)
+                            {
+                                <tr style="border-bottom:1px solid rgba(255,255,255,.06);">
+                                    <td>@(string.IsNullOrWhiteSpace(it.ProductNameSnapshot) ? ("Item #" + it.Id) : it.ProductNameSnapshot)</td>
+                                    <td class="muted">@it.UnitPrice</td>
+                                    <td class="muted">@it.Quantity</td>
+                                    <td class="fw-semibold">@it.LineTotal</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

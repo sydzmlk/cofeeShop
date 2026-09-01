@@ -1,0 +1,142 @@
+﻿@model CoffeeShop.ViewModels.ShopVM
+@{
+    ViewData["Title"] = "Shop";
+}
+
+
+<section class="ftco-section ftco-degree-bg shop-hero">
+    <div class="container">
+        <div class="row justify-content-center mb-3 pb-0">
+            <div class="col-md-7 heading-section ftco-animate text-center">
+                <h2 class="mb-0">SHOP</h2>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="ftco-menu mb-5 pb-5 shop-body">
+    <div class="container">
+        <div class="row d-md-flex justify-content-center">
+            <div class="col-lg-12 ftco-animate p-md-4">
+
+                <div class="row justify-content-center">
+
+                    
+                    <div class="col-md-12 nav-link-wrap mb-4 d-flex justify-content-center">
+                        <div class="nav ftco-animate nav-pills justify-content-center"
+                             id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                            @{
+                                var first = true;
+                                var i = 0;
+                                foreach (var c in Model.Categories)
+                                {
+                                    <a class="nav-link @(first ? "active" : "")"
+                                       id="v-pills-@i-tab"
+                                       data-toggle="pill"
+                                       href="#v-pills-@i"
+                                       role="tab"
+                                       aria-controls="v-pills-@i"
+                                       aria-selected="@(first ? "true" : "false")">
+                                        @c.Name
+                                    </a>
+
+                                    first = false;
+                                    i++;
+                                }
+                            }
+                        </div>
+                    </div>
+
+               
+                    <div class="col-md-12">
+                        <div class="tab-content ftco-animate w-100" id="v-pills-tabContent">
+                            @{
+                                var firstPane = true;
+                                var j = 0;
+
+                                foreach (var c in Model.Categories)
+                                {
+                                    var items = Model.Products.Where(p => p.CategoryId == c.Id).ToList();
+
+                                    <div class="tab-pane fade @(firstPane ? "show active" : "")"
+                                         id="v-pills-@j"
+                                         role="tabpanel"
+                                         aria-labelledby="v-pills-@j-tab">
+
+                                        <div class="row justify-content-center g-4">
+                                            @if (!items.Any())
+                                            {
+                                                <div class="col-12 text-center">
+                                                    <p class="text-muted">No products in @c.Name</p>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                foreach (var p in items)
+                                                {
+                                                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex mb-4">
+                                                        <div class="menu-wrap w-100">
+                                                            <a class="menu-img img mb-4"
+                                                               style="background-image: url('@(string.IsNullOrWhiteSpace(p.ImageUrl) ? "/images/menu-1.jpg" : p.ImageUrl)');">
+                                                            </a>
+
+                                                            <div class="text text-center">
+                                                                <h3 class="mb-2">
+                                                                    <a asp-controller="Shop" asp-action="Details" asp-route-id="@p.Id">@p.Name</a>
+                                                                </h3>
+
+                                                                <p class="price"><span>@p.Price.ToString("0.00") ₼</span></p>
+
+                                                                <p>
+                                                                    <form asp-controller="Cart" asp-action="Add" method="post" class="add-to-cart-form">
+                                                                        @Html.AntiForgeryToken()
+                                                                        <input type="hidden" name="productId" value="@p.Id" />
+                                                                        <input type="hidden" name="qty" value="1" />
+                                                                        <button type="submit" class="btn btn-primary btn-outline-primary w-100">
+                                                                            Add to Cart
+                                                                        </button>
+                                                                    </form>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+
+                                    </div>
+
+                                    firstPane = false;
+                                    j++;
+                                }
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script>
+        $(document).on("submit", ".add-to-cart-form", function (e) {
+            e.preventDefault();
+
+            var $form = $(this);
+            $.ajax({
+                url: $form.attr("action"),
+                type: "POST",
+                data: $form.serialize(),
+                success: function (res) {
+                    if (res && res.success) {
+                        $("#cartCount").text(res.count);
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+
